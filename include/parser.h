@@ -20,8 +20,8 @@ double evaluate(char *expression);
 
 list_T *tokenize(char *expression);
 
-void convert_to_RPN(list_T tokens);
+void convert_to_RPN(list_T *tokens);
 
-void evaluate_RPN();
+double evaluate_RPN();
 
 #endif //MATH_EXPRESSION_PARSER_PARSER_H

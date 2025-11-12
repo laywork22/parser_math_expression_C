@@ -14,7 +14,7 @@ typedef struct Stack {
     int counter;
 } stack_T;
 
-stack_T init_stack_T();
+stack_T *init_stack_T();
 
 void push_stack_T(token_T token, stack_T *stack);
 

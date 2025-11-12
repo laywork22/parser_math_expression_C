@@ -15,50 +15,34 @@ list_T *create_list() {
     }
 
     list->head = NULL;
-    list->counter = 0;
 
     return list;
 }
 
 void add_node(list_T *list, token_T *token) {
-    node_T *node = malloc(sizeof(node_T));
-
+    node_T *node = create_node(token);
 
     if (!node) {
-        perror("Non non allocato");
+        perror("Nodo non allocato");
         exit(EXIT_FAILURE);
     }
 
     node->tokens = token;
     node->next = NULL;
 
-    if (!list_is_full(list)) {
-        if (list_is_empty(list)) {
-            list->head = node;
-        } else {
-            node_T *last_node = list->head;
-
-            while (last_node->next != NULL) {
-                last_node = last_node->next;
-            }
-
-            last_node->next = node;
-            list->counter++;
-        }
+    if (list_is_empty(list)) {
+        list->head = node;
     } else {
-        perror("Lista piena");
-        exit(EXIT_FAILURE);
+        node_T *last_node = list->head;
+
+        while (last_node->next != NULL) {
+            last_node = last_node->next;
+        }
+
+        last_node->next = node;
     }
 }
 
-/**
- *
- * @brief elimina il token passato come parametro
- * @param list
- * @param token
- */
-
-//FIFO lista
 int remove_node(list_T *list, token_T *token) {
     if (list_is_empty(list)) {
         return 0;
@@ -76,8 +60,6 @@ int remove_node(list_T *list, token_T *token) {
             }
 
             free(curr);
-
-            list->counter--;
 
             return 1;
         }
@@ -102,20 +84,52 @@ int remove_node_head(list_T *list) {
         list->head = curr->next;
     }
 
-    list->counter--;
-
     free(curr);
 
     return 1;
 }
 
-node_T *find_node(token_T *token) {
+token_T *peek_head(list_T *list) {
+    if (list_is_empty(list)) return NULL;
+
+    return list->head->tokens;
+}
+
+node_T *destroy_node(node_T *node) {
+    if (!node) return NULL;
+
+    node = destroy_node(node->next);
+
+    free(node->tokens);
+    free(node);
+
     return NULL;
 }
 
-list_T *destroy_list(list_T *list);
+list_T *destroy_list(list_T *list) {
+    if (list == NULL) {
+        return NULL;
+    }
 
-int list_is_empty(list_T *list);
+    list->head = destroy_node(list->head);
 
-int list_is_full(list_T *list);
+    free(list);
+
+    return NULL;
+}
+
+int list_is_empty(list_T *list) {
+    return list->head == NULL;
+}
+
+node_T *create_node(token_T *token) {
+    node_T *node = malloc(sizeof(node_T));
+
+    if (!node) return NULL;
+
+    node->tokens = token;
+    node->next = NULL;
+
+    return node;
+}
 

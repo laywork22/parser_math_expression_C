@@ -6,12 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-stack_T init_stack_T() {
-    stack_T stack;
-    stack.counter = 0;
-    stack.size = MAX_STACK_SIZE;
+stack_T *init_stack_T() {
+    stack_T *stack = malloc(sizeof(stack_T));
 
-    return stack;
+    stack->counter = 0;
+    stack->size = MAX_STACK_SIZE;
+
+    return &stack;
 }
 
 
