@@ -20,7 +20,9 @@ list_T *create_list();
 
 void add_node(list_T *list, token_T *token);
 
-void remove_node(list_T *list,token_T *token);
+int remove_node(list_T *list,token_T *token);
+
+int remove_node_head(list_T *list);
 
 node_T *find_node(token_T *token);
 

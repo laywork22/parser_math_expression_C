@@ -43,6 +43,7 @@ void add_node(list_T *list, token_T *token) {
             }
 
             last_node->next = node;
+            list->counter++;
         }
     } else {
         perror("Lista piena");
@@ -56,22 +57,61 @@ void add_node(list_T *list, token_T *token) {
  * @param list
  * @param token
  */
-void remove_node(list_T *list, token_T *token) {
+
+//FIFO lista
+int remove_node(list_T *list, token_T *token) {
     if (list_is_empty(list)) {
-        perror("Lista vuota");
-        exit(EXIT_FAILURE);
+        return 0;
     }
 
-    node_T *node = list->head;
+    node_T *curr = list->head;
+    node_T *prec = NULL;
 
-    whiile(node != NULL) {
-        if (node->tokens == token && list->head->tokens == node->tokens) {
-            node_T *curr;
+    while (curr != NULL) {
+        if (curr->tokens == token) {
+            if (prec == NULL) {
+                list->head = curr->next;
+            } else {
+                prec->next = curr->next;
+            }
+
+            free(curr);
+
+            list->counter--;
+
+            return 1;
         }
+        prec = curr;
+        curr = curr->next;
     }
+
+    return 0;
 }
 
-node_T *find_node(token_T *token);
+int remove_node_head(list_T *list) {
+    if (list_is_empty(list)) {
+        return 0;
+    }
+
+    node_T *curr = list->head;
+
+    if (curr->next == NULL) {
+        list->head = NULL;
+    }
+    else {
+        list->head = curr->next;
+    }
+
+    list->counter--;
+
+    free(curr);
+
+    return 1;
+}
+
+node_T *find_node(token_T *token) {
+    return NULL;
+}
 
 list_T *destroy_list(list_T *list);
 
@@ -79,9 +119,3 @@ int list_is_empty(list_T *list);
 
 int list_is_full(list_T *list);
 
-
-node_T *create_node(token_T *token);
-
-node_T *insert_node(node_T *node);
-
-node_T *destroy_node(node_T *node);
