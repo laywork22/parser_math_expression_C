@@ -13,13 +13,14 @@ typedef struct Node {
 
 typedef struct list {
     node_T *head;
+    int counter;
 } list_T;
 
 list_T *create_list();
 
-void add_node(token_T *token);
+void add_node(list_T *list, token_T *token);
 
-void remove_node(token_T *token);
+void remove_node(list_T *list,token_T *token);
 
 node_T *find_node(token_T *token);
 

@@ -22,6 +22,6 @@ typedef struct ExpressionToken {
     int priority;
 }token_T;
 
-token_T *init_token_T(tokens token, int priority);
+token_T init_token_T(tokens token, int priority);
 
 #endif //MATH_EXPRESSION_PARSER_EXPRESSION_TOKEN_H

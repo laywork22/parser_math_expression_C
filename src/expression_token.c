@@ -3,13 +3,11 @@
 //
 #include "../include/expression_token.h"
 
-#include <stdlib.h>
+token_T init_token_T(const tokens token, const int priority) {
+    token_T tk;
 
-token_T *init_token_T(tokens token, int priority) {
-    token_T *tk = (token_T *)malloc(sizeof(token_T));
-
-    tk->token = token;
-    tk->priority = priority;
+    tk.token = token;
+    tk.priority = priority;
 
     return tk;
 }
