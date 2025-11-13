@@ -177,24 +177,26 @@ void convert_to_RPN(parser_T *parser, list_T *tkns) {
             tokens tk = token->token;
 
             if (tk == LEFT_PAREN_TOKEN) {
-                push_stack_T(tk, parser->operatorStack);
+                push_stack_T(*token, parser->operatorStack);
             }
             else if (tk == RIGHT_PAREN_TOKEN) {
-                while (!is_stack_empty(parser->operatorStack)) {
+                while (!is_stack_empty(parser->operatorStack) &&
+                    get_top(parser->operatorStack)->token != LEFT_PAREN_TOKEN) {
                     token_T *tn = pop_stack_T(parser->operatorStack);
                     enqueue(parser->outputQueue, tn, TOKEN_TYPE);
                 }
 
-                if (!is_stack_empty(parser->operatorStack)) {
-                    token_T *token_free = pop_stack_T(parser->operatorStack);
-                    free(token_free);
+                if (!is_stack_empty(parser->operatorStack) &&
+                    get_top(parser->operatorStack)->token == LEFT_PAREN_TOKEN) {
+                    pop_stack_T(parser->operatorStack);
                 }
             }
             else {
                 while (!is_stack_empty(parser->operatorStack) &&
                     get_top(parser->operatorStack)->token != LEFT_PAREN_TOKEN &&
                         get_top(parser->operatorStack)->priority >= token->priority) {
-                    enqueue(parser->outputQueue, token, TOKEN_TYPE);
+                    token_T *tn = pop_stack_T(parser->operatorStack);
+                    enqueue(parser->outputQueue, tn, TOKEN_TYPE);
                 }
 
                 push_stack_T(*token, parser->operatorStack);
