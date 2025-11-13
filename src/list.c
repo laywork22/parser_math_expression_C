@@ -19,15 +19,15 @@ list_T *create_list() {
     return list;
 }
 
-void add_node(list_T *list, token_T *token) {
-    node_T *node = create_node(token);
+void add_node(list_T *list, expression_T *exp) {
+    node_T *node = create_node(exp);
 
     if (!node) {
         perror("Nodo non allocato");
         exit(EXIT_FAILURE);
     }
 
-    node->tokens = token;
+    node->exp = exp;
     node->next = NULL;
 
     if (list_is_empty(list)) {
@@ -43,7 +43,7 @@ void add_node(list_T *list, token_T *token) {
     }
 }
 
-int remove_node(list_T *list, token_T *token) {
+int remove_node(list_T *list, const expression_T *exp) {
     if (list_is_empty(list)) {
         return 0;
     }
@@ -52,7 +52,7 @@ int remove_node(list_T *list, token_T *token) {
     node_T *prec = NULL;
 
     while (curr != NULL) {
-        if (curr->tokens == token) {
+        if (curr->exp == exp) {
             if (prec == NULL) {
                 list->head = curr->next;
             } else {
@@ -89,10 +89,20 @@ int remove_node_head(list_T *list) {
     return 1;
 }
 
-token_T *peek_head(list_T *list) {
+expression_T *peek_head(list_T *list) {
     if (list_is_empty(list)) return NULL;
 
-    return list->head->tokens;
+    return list->head->exp;
+}
+
+expression_T *peek_last(list_T *list) {
+    node_T *curr = list->head;
+
+    while (curr->next != NULL) {
+        curr = curr->next;
+    }
+
+    return curr->exp;
 }
 
 node_T *destroy_node(node_T *node) {
@@ -100,7 +110,7 @@ node_T *destroy_node(node_T *node) {
 
     node = destroy_node(node->next);
 
-    free(node->tokens);
+    free(node->exp);
     free(node);
 
     return NULL;
@@ -122,12 +132,12 @@ int list_is_empty(list_T *list) {
     return list->head == NULL;
 }
 
-node_T *create_node(token_T *token) {
+node_T *create_node(expression_T *exp) {
     node_T *node = malloc(sizeof(node_T));
 
     if (!node) return NULL;
 
-    node->tokens = token;
+    node->exp = exp;
     node->next = NULL;
 
     return node;

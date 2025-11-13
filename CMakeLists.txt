@@ -15,4 +15,6 @@ add_library(math_expression_parser STATIC
         src/expression_token.c
         src/stack.c
         src/queue.c
-        src/parser.c)
+        src/parser.c
+        main.c
+)

@@ -18,9 +18,9 @@ stack_T *init_stack_T();
 
 void push_stack_T(token_T token, stack_T *stack);
 
-token_T pop_stack_T(stack_T *stack);
+token_T *pop_stack_T(stack_T *stack);
 
-token_T get_top(const stack_T *stack);
+token_T *get_top(stack_T *stack);
 
 int is_stack_full(const stack_T *stack);
 

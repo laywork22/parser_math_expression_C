@@ -12,7 +12,7 @@ stack_T *init_stack_T() {
     stack->counter = 0;
     stack->size = MAX_STACK_SIZE;
 
-    return &stack;
+    return stack;
 }
 
 
@@ -28,7 +28,7 @@ void push_stack_T(const token_T token, stack_T *stack){
 
 }
 
-token_T pop_stack_T( stack_T *stack) {
+token_T *pop_stack_T(stack_T *stack) {
     if (is_stack_empty(stack)) {
         printf("Stack vuoto: impossibile eliminare elementi\n");
         exit(1);
@@ -38,16 +38,16 @@ token_T pop_stack_T( stack_T *stack) {
 
     stack->counter--;
 
-    return stack->operatorStack[index];
+    return &stack->operatorStack[index];
 }
 
-token_T get_top(const stack_T *stack) {
+token_T *get_top(stack_T *stack) {
     if (is_stack_empty(stack)) {
         printf("Stack vuoto: impossibile eseguire l'operazione di top\n");
         exit(1);
     }
 
-    return stack->operatorStack[stack->counter - 1];
+    return &stack->operatorStack[stack->counter - 1];
 }
 
 int is_stack_full(const stack_T *stack) {

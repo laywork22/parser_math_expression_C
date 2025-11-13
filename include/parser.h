@@ -14,14 +14,20 @@ typedef struct parser {
     stack_T *operatorStack;
 }parser_T;
 
-void init_parser(parser_T *parser);
+parser_T *init_parser();
 
-double evaluate(char *expression);
+double evaluate(parser_T *parser, const char *expression);
 
-list_T *tokenize(char *expression);
+list_T *tokenize(const parser_T *parser, const char *expression);
 
-void convert_to_RPN(list_T *tokens);
+void convert_to_RPN(parser_T *parser,list_T *tokens);
 
-double evaluate_RPN();
+double evaluate_RPN(parser_T *parser);
+
+void destroy_parser(parser_T *parser);
+
+expression_T *init( void *value, data_type_T data_type);
+
+void destroy(expression_T *exp);
 
 #endif //MATH_EXPRESSION_PARSER_PARSER_H
