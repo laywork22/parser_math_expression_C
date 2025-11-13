@@ -67,7 +67,7 @@ void enqueue(queue_T *queue, void *value, const data_type_T data_type) {
 
     queue->tail = (queue->tail + 1) % MAX_QUEUE_SIZE;
 
-    queue->counter--;
+    queue->counter++;
 }
 
 expression_T get_first_from_queue_T(queue_T *queue) {

@@ -41,7 +41,7 @@ parser_T *init_parser() {
 
     parser->operatorStack = init_stack_T();
     parser->outputQueue = init_queue_T();
-    if (!parser->operatorStack || parser->outputQueue) {
+    if (!parser->operatorStack || !parser->outputQueue) {
         perror("Errore allocazione parser");
         exit(1);
     }
@@ -54,7 +54,7 @@ double evaluate(parser_T *parser, const char *expression) {
 
     convert_to_RPN(parser,tokens);
 
-    return evaluate_RPN();
+    return evaluate_RPN(parser);
 }
 
 list_T *tokenize(const parser_T *parser, const char *expression) {
@@ -86,15 +86,15 @@ list_T *tokenize(const parser_T *parser, const char *expression) {
                 exp_counter = -1; //stringa vuota
             }
 
-            int is_unary = 0;
 
-            if (is_stack_empty(parser->operatorStack)) {
+           /* if (is_stack_empty(parser->operatorStack)) {
                 is_unary = 1;
-            }
-            else {
-                expression_T *last_exp = peek_last(tokenizer);
+            }*/
+            int is_unary = 0;
+            expression_T *last_exp = peek_last(tokenizer);
 
-                if (last_exp == NULL || last_exp->type == TOKEN_TYPE) {
+            if (last_exp == NULL || last_exp->type == TOKEN_TYPE) {
+                if (last_exp != NULL) {
                     const token_T *token = last_exp->data;
 
                     tokens tk = token->token;
@@ -102,13 +102,17 @@ list_T *tokenize(const parser_T *parser, const char *expression) {
                     if (tk != RIGHT_PAREN_TOKEN) {
                         is_unary = 1;
                     }
+
+                }
+                else {
+                    is_unary = 1;
                 }
             }
             if (is_unary) {
-                add_node(tokenizer, init(init_token_T(UNARY_MINUS_TOKEN, 4), AST_TYPE));
+                add_node(tokenizer, init(init_token_T(UNARY_MINUS_TOKEN, 4), TOKEN_TYPE));
             }
             else {
-                add_node(tokenizer, init(init_token_T(MINUS_TOKEN, 2), AST_TYPE));
+                add_node(tokenizer, init(init_token_T(MINUS_TOKEN, 2), TOKEN_TYPE));
 
             }
         }
@@ -120,19 +124,19 @@ list_T *tokenize(const parser_T *parser, const char *expression) {
                exp_counter = -1; //stringa vuota
            }
            if (curr == '+') {
-               add_node(tokenizer, init(init_token_T(PLUS_TOKEN, 2), AST_TYPE));
+               add_node(tokenizer, init(init_token_T(PLUS_TOKEN, 2), TOKEN_TYPE));
            }
            else if (curr == '*') {
-               add_node(tokenizer, init(init_token_T(MUL_TOKEN, 3), AST_TYPE));
+               add_node(tokenizer, init(init_token_T(MUL_TOKEN, 3), TOKEN_TYPE));
            }
            else if (curr == '/') {
-               add_node(tokenizer, init(init_token_T(DIV_TOKEN, 3), AST_TYPE));
+               add_node(tokenizer, init(init_token_T(DIV_TOKEN, 3), TOKEN_TYPE));
            }
            else if (curr == '(') {
-               add_node(tokenizer, init(init_token_T(LEFT_PAREN_TOKEN, 1), AST_TYPE));
+               add_node(tokenizer, init(init_token_T(LEFT_PAREN_TOKEN, 1), TOKEN_TYPE));
            }
            else if (curr == ')') {
-               add_node(tokenizer, init(init_token_T(RIGHT_PAREN_TOKEN, 1), AST_TYPE));
+               add_node(tokenizer, init(init_token_T(RIGHT_PAREN_TOKEN, 1), TOKEN_TYPE));
            }
         }
         else if (isspace(curr)) {
@@ -177,13 +181,21 @@ void convert_to_RPN(parser_T *parser, list_T *tkns) {
             tokens tk = token->token;
 
             if (tk == LEFT_PAREN_TOKEN) {
-                push_stack_T(*token, parser->operatorStack);
+                push_stack_T(token, parser->operatorStack);
             }
             else if (tk == RIGHT_PAREN_TOKEN) {
                 while (!is_stack_empty(parser->operatorStack) &&
                     get_top(parser->operatorStack)->token != LEFT_PAREN_TOKEN) {
-                    token_T *tn = pop_stack_T(parser->operatorStack);
-                    enqueue(parser->outputQueue, tn, TOKEN_TYPE);
+                    token_T temp_token = pop_stack_T(parser->operatorStack);
+                    token_T *tk = malloc(sizeof(token_T));
+
+                    if (!tk) {
+                        perror("Errore malloc in convert_to_RPN");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    *tk = temp_token;
+                    enqueue(parser->outputQueue, tk, TOKEN_TYPE);
                 }
 
                 if (!is_stack_empty(parser->operatorStack) &&
@@ -195,11 +207,19 @@ void convert_to_RPN(parser_T *parser, list_T *tkns) {
                 while (!is_stack_empty(parser->operatorStack) &&
                     get_top(parser->operatorStack)->token != LEFT_PAREN_TOKEN &&
                         get_top(parser->operatorStack)->priority >= token->priority) {
-                    token_T *tn = pop_stack_T(parser->operatorStack);
-                    enqueue(parser->outputQueue, tn, TOKEN_TYPE);
+                    token_T token_temp = pop_stack_T(parser->operatorStack);
+                    token_T *tk = malloc(sizeof(token_T));
+
+                    if (!tk) {
+                        perror("Errore malloc in convert_to_RPN");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    *tk = token_temp;
+                    enqueue(parser->outputQueue, tk, TOKEN_TYPE);
                 }
 
-                push_stack_T(*token, parser->operatorStack);
+                push_stack_T(token, parser->operatorStack);
             }
         }
 
@@ -207,14 +227,96 @@ void convert_to_RPN(parser_T *parser, list_T *tkns) {
     }
 
     while (!is_stack_empty(parser->operatorStack)) {
-        token_T *tk = pop_stack_T(parser->operatorStack);
+        token_T token_temp = pop_stack_T(parser->operatorStack);
+        token_T *tk = malloc(sizeof(token_T));
 
+        if (!tk) {
+            perror("Errore malloc in convert_to_RPN");
+            exit(EXIT_FAILURE);
+        }
+
+        *tk = token_temp;
         enqueue(parser->outputQueue, tk, TOKEN_TYPE);
     }
 }
 
-double evaluate_RPN(parser_T *parser) {
-    return 0.0;
+double evaluate_RPN(const parser_T *parser) {
+    double expStack[MAX_STACK_SIZE];
+    int counter = 0;
+
+    double evaluation = 0.0;
+
+    while (!queue_is_empty(parser->outputQueue)) {
+        expression_T *exp = dequeue(parser->outputQueue);
+
+        if (exp->type == AST_TYPE) {
+            number_T *number = exp->data;
+
+            expStack[counter++] = number->value;
+        }
+        else if (exp->type == TOKEN_TYPE) {
+            token_T *token = exp->data;
+
+            if (token->token == UNARY_MINUS_TOKEN) {
+                if (counter < 1) {
+                    perror("Errore di sintassi");
+                    exit(EXIT_FAILURE);
+                }
+                double n1 = expStack[counter - 1];
+                expStack[counter - 1] = -n1;
+            }
+            else {
+                if (counter < 2) {
+                    perror("Errore di sintassi");
+                    exit(EXIT_FAILURE);
+                }
+
+                double result = 0.0;
+
+                double n2 = expStack[--counter];
+                double n1 = expStack[--counter];
+
+                switch (token->token) {
+                    case PLUS_TOKEN:
+                        result = n1 + n2;
+                        break;
+                    case MINUS_TOKEN:
+                        result = n1 - n2;
+                        break;
+                    case MUL_TOKEN:
+                        result = n1*n2;
+                        break;
+                    case DIV_TOKEN: {
+                        if(n2 != 0) {
+                            result = n1/n2;
+                        }
+                        else {
+                            perror("Division by zero");
+                            exit(EXIT_FAILURE);
+                        }
+                        break;
+                    }
+                    default:
+                        perror("Errore: token sconosciuto in RPN\n");
+                        exit(EXIT_FAILURE);
+                }
+
+                expStack[counter++] = result;
+            }
+        }
+
+
+    }
+
+    if (counter == 1) {
+        evaluation = expStack[0];
+    }
+    else {
+        perror("Errore: espressione RPN non valida");
+        exit(EXIT_FAILURE);
+    }
+
+    return evaluation;
 }
 
 void destroy_parser(parser_T *parser) {

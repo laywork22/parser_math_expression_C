@@ -16,19 +16,19 @@ stack_T *init_stack_T() {
 }
 
 
-void push_stack_T(const token_T token, stack_T *stack){
+void push_stack_T(token_T *token, stack_T *stack){
     if (is_stack_full(stack)) {
         printf("Stack pieno: impossibile aggiungere altri elementi. Espressione troppo grande\n");
         exit(1);
     }
 
-    stack->operatorStack[stack->counter] = token;
+    stack->operatorStack[stack->counter] = *token;
 
     stack->counter++;
 
 }
 
-token_T *pop_stack_T(stack_T *stack) {
+token_T pop_stack_T(stack_T *stack) {
     if (is_stack_empty(stack)) {
         printf("Stack vuoto: impossibile eliminare elementi\n");
         exit(1);
@@ -38,7 +38,7 @@ token_T *pop_stack_T(stack_T *stack) {
 
     stack->counter--;
 
-    return &stack->operatorStack[index];
+    return stack->operatorStack[index];
 }
 
 token_T *get_top(stack_T *stack) {

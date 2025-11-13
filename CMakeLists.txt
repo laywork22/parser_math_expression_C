@@ -3,7 +3,7 @@ project(math_expression_parser C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_library(math_expression_parser STATIC
+add_executable(math_expression_parser
         include/expression_number.h
         include/expression_token.h
         include/parser.h

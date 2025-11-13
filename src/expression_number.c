@@ -4,7 +4,7 @@
 #include "../include/expression_number.h"
 #include <stdlib.h>
 
-number_T *init_expression_number(double value) {
+number_T *init_number_T(double value) {
     number_T *number = (number_T *) malloc(sizeof(number_T));
 
     number->value = value;

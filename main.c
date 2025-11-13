@@ -11,12 +11,21 @@ int main() {
 
     parser_T *parser = init_parser();
 
+    int again = 1;
     char expression[MAX_QUEUE_SIZE];
 
-    printf("Inserisci l'espressione da valutare: ");
-    scanf("%s", expression);
+    do {
+        printf("Inserisci l'espressione da valutare: ");
+        scanf("%s", expression);
 
-    printf("\nIl risultato è: %.3f", evaluate(parser, expression));
+        printf("\nIl risultato è: %.3f", evaluate(parser, expression));
+
+        printf("\nVuoi valutare un'altra espressione? -- 1 (si) | 0 (no) --\n");
+
+        scanf("%d", &again);
+
+    }while (again);
+
 
     destroy_parser(parser);
 

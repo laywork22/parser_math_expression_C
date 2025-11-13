@@ -22,7 +22,7 @@ list_T *tokenize(const parser_T *parser, const char *expression);
 
 void convert_to_RPN(parser_T *parser,list_T *tokens);
 
-double evaluate_RPN(parser_T *parser);
+double evaluate_RPN(const parser_T *parser);
 
 void destroy_parser(parser_T *parser);
 

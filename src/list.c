@@ -96,6 +96,10 @@ expression_T *peek_head(list_T *list) {
 }
 
 expression_T *peek_last(list_T *list) {
+    if (list_is_empty(list)) {
+        return NULL;
+    }
+
     node_T *curr = list->head;
 
     while (curr->next != NULL) {

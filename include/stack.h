@@ -16,9 +16,9 @@ typedef struct Stack {
 
 stack_T *init_stack_T();
 
-void push_stack_T(token_T token, stack_T *stack);
+void push_stack_T(token_T *token, stack_T *stack);
 
-token_T *pop_stack_T(stack_T *stack);
+token_T pop_stack_T(stack_T *stack);
 
 token_T *get_top(stack_T *stack);
 
